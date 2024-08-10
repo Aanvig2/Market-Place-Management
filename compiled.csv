@@ -1,0 +1,28 @@
+id,name,Price_per_unit,Place,Time required,Offers
+1,tropical fruit,89,Akshay Farms,17,5% off
+2,tropical fruit,95,City Farms,21,10% off
+3,whole milk,20,Green Meadows Farm,29,20% off
+4,whole milk,18,Sunny Acres Farm,12,15% off
+5,whole milk,14,Rolling Hills Ranch,25,None
+6,chicken,280,Blue Sky Farms,8,5% off
+7,chicken,290,Meadowbrook Farm,14,None
+8,chicken,275,Willow Creek Farm,22,10% off
+9,root vegetables,40,Harvest Moon Ranch,19,None
+10,root vegetables,43,Golden Fields Farm,27,25% off
+11,root vegetables,56,Oak Ridge Farm,10,10% off
+12,flour,35,Silver Valley Industries,16,None
+13,flour,33,Aata Industries,30,30% off
+14,flour,38,Rustic Industries,11,20% off
+15,onions,10,Crystal Farms,24,None
+16,onions,9,Mega Farms,13,5% off
+17,onions,10,Maple Grove Farms,26,7% off
+18,photo/film,300,Riverbend Industries,6,15% off
+19,photo/film,350,Evergreen Industries,23,10% off
+20,photo/film,320,Windy Hill Farm,18,None
+21,dish cleaner,65,Prairie Sunrise Industries,20,10% off
+22,dish cleaner,56,Meadowlark Industries,28,5% off
+23,dish cleaner,66,Homestead Industries,9,None
+24,soap,78,Cedar Hill Industries,15,20% off
+25,soap,100,Autumn Leaf Industries,7,25% off
+26,soap,69,Cloverfield Industries,5,None
+27,soap,80,Springtime Industries,31,15% off
