@@ -42,7 +42,6 @@ This repository contains a Market Place Management network using four agents: `B
 ### Step 3: Run Project
 
 To run the project and its agents
-1. **Navigate to the project directory:**
 
-    cd AgentsFinal
-    python Agentcode.py
+cd AgentsFinal
+python Agentcode.py
