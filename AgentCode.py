@@ -23,7 +23,8 @@ MAIL_API_KEY = ""
 MARKET_BASKET_SEED_PHRASE = "market basket agent secret phrase"
 MARKET_BASKET_CSV_PATH = "Groceries_dataset.csv"
 COMPILED_CSV_PATH = "compiled.csv"
-
+#We already provided a dataset for emails that are in txt format, as well as the code which can be used to extract information from those emails and store them into a compiled.csv file
+#If you want to use other sets of emails, you can use that code to extact their info and store it to compiled.csv and then run this code
 business_info = {
     "name" : "Market Place",
     "address" : "4th Street, Hauz Khas",
