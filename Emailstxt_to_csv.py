@@ -25,10 +25,10 @@ def extract_info(email_text):
     }
 
 # Path containing txt email files
-directory_path = ""
+directory_path = "Email_data"
 
 # Path to the output CSV file
-csv_file = 'C:/Users/aanvi/Desktop/VS_code/Python/Fetchai/compiled.csv'
+csv_file = 'compiled.csv'
 
 with open(csv_file, 'w', newline='') as csvfile:
     fieldnames = ['id', 'name', 'Price per unit', 'Place', 'Time required', 'Offers']
@@ -37,7 +37,7 @@ with open(csv_file, 'w', newline='') as csvfile:
     writer.writeheader()
 
     for i in range(27):
-        email_file = f'C:/Users/aanvi/Desktop/VS_code/Python/Fetchai/Email_data/email_{i+1}.txt'
+        email_file = f'Email_data/email_{i+1}.txt'
         with open(email_file, 'r') as file:
             email_text = file.read()
         info = extract_info(email_text)
