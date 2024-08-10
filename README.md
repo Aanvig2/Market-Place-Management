@@ -2,13 +2,13 @@
 
 This repository contains a Market Place Management network using four agents: `BOA`(Best Offer Analysis Agent), `MBA` (Market Basket Analysis Agent), `IVM`(Invoice and Mailing agent) and `User` Agent.
 
-`User` Agent - Allows the user to choose between different options: requesting the best offer (`BOA` agent), performing market basket analysis (`MBA` agent), or handling invoice-related tasks (`IVM` agent).
+**`User` Agent** - Allows the user to choose between different options: requesting the best offer (`BOA` agent), performing market basket analysis (`MBA` agent), or handling invoice-related tasks (`IVM` agent).
 
-`BOA` Agent - Receives a product name from the `User` agent, calculates the best offer by finding the product with the lowest effective price (considering any discounts), and returns this information.
+**`BOA` Agent** - Receives a product name from the `User` agent, calculates the best offer by finding the product with the lowest effective price (considering any discounts), and returns this information.
 
-`MBA` Agent - Receives minimum support, confidence, and lift values from the `User` agent, processes the market basket data from the `Groceries_dataset.csv` file, and returns the results of the Apriori analysis, including association rules with support, confidence, and lift metrics.
+**`MBA` Agent** - Receives minimum support, confidence, and lift values from the `User` agent, processes the market basket data from the `Groceries_dataset.csv` file, and returns the results of the Apriori analysis, including association rules with support, confidence, and lift metrics.
 
-`IVM` Agent - Handles requests related to invoices, such as generating a new invoice, retrieving all invoices, or getting an invoice by ID. It interacts with the `invoice-api1.p.rapidapi.com` to create and manage invoices and with the `send-mail-serverless.p.rapidapi.com` to send invoice emails to clients.
+**`IVM` Agent** - Handles requests related to invoices, such as generating a new invoice, retrieving all invoices, or getting an invoice by ID. It interacts with the `invoice-api1.p.rapidapi.com` to create and manage invoices and with the `send-mail-serverless.p.rapidapi.com` to send invoice emails to clients.
 
 ## How to get Started!
 ### Step 1: Get API Keys
