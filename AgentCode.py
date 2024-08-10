@@ -14,21 +14,15 @@ warnings.filterwarnings('ignore')
 
 nest_asyncio.apply()
 
+# Defining API Keys, Host and paths
 INVOICE_API_HOST = "invoice-api1.p.rapidapi.com"
-INVOICE_API_KEY = "088c6a5670msh2b96f5b2c21cc02p10dce0jsne1a671ace727"
+INVOICE_API_KEY = ""
 MAIL_API_HOST = "send-mail-serverless.p.rapidapi.com"
-MAIL_API_KEY = "088c6a5670msh2b96f5b2c21cc02p10dce0jsne1a671ace727"
-
-BOA_SEED_PHRASE = "BOA secret phrase"
-
-INVOICE_API_HOST = "invoice-api1.p.rapidapi.com"
-INVOICE_API_KEY = "088c6a5670msh2b96f5b2c21cc02p10dce0jsne1a671ace727"
-MAIL_API_HOST = "send-mail-serverless.p.rapidapi.com"
-MAIL_API_KEY = "088c6a5670msh2b96f5b2c21cc02p10dce0jsne1a671ace727"
+MAIL_API_KEY = ""
 
 MARKET_BASKET_SEED_PHRASE = "market basket agent secret phrase"
-MARKET_BASKET_CSV_PATH = "C:/Users/aanvi/Desktop/VS_code/Python/Fetchai/Groceries_dataset.csv"
-COMPILED_CSV_PATH = "C:/Users/aanvi/Desktop/VS_code/Python/Fetchai/compiled.csv"
+MARKET_BASKET_CSV_PATH = "Groceries_dataset.csv"
+COMPILED_CSV_PATH = "compiled.csv"
 
 business_info = {
     "name" : "Market Place",
@@ -39,7 +33,7 @@ business_info = {
 invoice_url = ""
 filepaths = {"path": MARKET_BASKET_CSV_PATH}
 
-#CLASSES 
+#Defining Classes 
 class BOA_receive(Model):
     message:str
 
@@ -53,11 +47,12 @@ class MBA_receive(Model):
 
 class IVM_receive(Model):
     msg:str
-#HELPER FUNCTIONS
+
+#Helper Functions for different Agents
 '''BOA CODE'''
 import pandas as pd
 
-data = pd.read_csv('C:/Users/aanvi/Desktop/VS_code/Python/Fetchai/compiled.csv')
+data = pd.read_csv('compiled.csv')
 
 def parse_offer(Offers, Price_per_unit):
     if not isinstance(Offers, str):
@@ -68,27 +63,21 @@ def parse_offer(Offers, Price_per_unit):
     else:
         return Price_per_unit
 
-# Function to get the best offer for a specific fruit
-def get_best_offer(fruit):
-    # Filter items based on the provided fruit name
-    filtered_items = data[data['name'].str.lower() == fruit.lower()]
-    # Initialize an empty dictionary to store the result
+def get_best_offer(product):
+    filtered_items = data[data['name'].str.lower() == product.lower()]
     result = {}
-    # Calculate the effective price for each item
     filtered_items['effective_price'] = filtered_items.apply(
         lambda row: parse_offer(row['Offers'], row['Price_per_unit']),
         axis=1
     )
-    # Get the best offer by finding the item with the minimum effective price
+    # Getting best offer by using effective price which was calculated
     best_offer = filtered_items.loc[filtered_items['effective_price'].idxmin()]
-    # Populate the result dictionary with the best offer details
     result['name'] = best_offer['name']
     result['Place'] = best_offer['Place']
     result['Price_per_unit'] = best_offer['Price_per_unit']
     result['Offers'] = best_offer['Offers']
     result['effective_price'] = best_offer['effective_price']
     return result
-    # CAN SEND ORDER BACK TO SELLER TOO FROM MAIL
 
 
 '''MBA CODE'''
@@ -97,13 +86,11 @@ def process_csv_and_generate_outputs(file_path, min_support, min_confidence, min
         min_confidence = float(min_confidence)
         min_lift = float(min_lift)
         df = pd.read_csv(file_path)
-        # Customer-level data
+
         cust_level = df[["Member_number", "itemDescription"]].sort_values(by="Member_number", ascending=False)
         cust_level['itemDescription'] = cust_level['itemDescription'].str.strip()
-
-        # Transactions for Apriori
+        #Convering csv data into proper form of data to perform Market Basket Analysis
         transactions = [a[1]['itemDescription'].tolist() for a in cust_level.groupby(['Member_number'])]
-
         # Apply Apriori algorithm
         def inspect(results):
             lhs = []
@@ -135,7 +122,7 @@ async def generate_new_invoice(ctx: Context):
     global invoice_url
     conn = http.client.HTTPSConnection(INVOICE_API_HOST)
 
-    # Collect client and items information
+    # Collecting client and items information
     print("Please enter client information:")
     client_name = input("Client Name: ")
     client_email = input("Client Email: ")
@@ -151,7 +138,7 @@ async def generate_new_invoice(ctx: Context):
         items.append({
             "name": item_name,
             "quantity": item_quantity,
-            "description": "No description",  # Default description
+            "description": "No description",  # You can change this description
             "price": item_price
         })
 
@@ -166,8 +153,8 @@ async def generate_new_invoice(ctx: Context):
             "tax_number": business_info["gst_number"],
             "address": business_info["address"],
             "contact_number": business_info["contact_number"],
-            "email": "info@mycompany.com",  # Default email or use a variable
-            "logo_url": "https://example.com/logo.jpg"  # Default logo URL or use a variable
+            "email": "info@mycompany.com",  # You can change this
+            "logo_url": "https://example.com/logo.jpg"  # You can change this
         },
         "customer": {
             "name": client_name,
@@ -199,13 +186,12 @@ async def generate_new_invoice(ctx: Context):
     # Extract the invoice URL from the response
     invoice_url = response.get("data", {}).get("invoice_url", "")
 
-    # Check if the invoice URL is available
     if invoice_url:
         formatted_data = json.dumps(response, indent=4)
         print("Invoice generated successfully:")
         print(formatted_data)
         
-        # Send the invoice PDF to the client
+        # Sending invoice PDF to client
         await send_invoice_to_client(ctx, client_email, invoice_url)
     else:
         print("Invoice URL not available. Unable to send email.")
@@ -261,7 +247,7 @@ async def send_invoice_to_client(ctx: Context, client_email: str, invoice_url: s
         "subject": "Thank you for your order !",
         "content": [{
             "type": "text/html",
-            "value": f"Dear Customer,<br><br>Please find your invoice attached below.<br><br>Invoice URL: <a href='{invoice_url}'>{invoice_url}</a><br><br>Thank you for your order.<br><br>Best Regards,<br>Dominos"
+            "value": f"Dear Customer,<br><br>Please find your invoice attached below.<br><br>Invoice URL: <a href='{invoice_url}'>{invoice_url}</a><br><br>Thank you for your order.<br><br>Best Regards,<br>Market Place"
         }],
         "headers": {
             "List-Unsubscribe": "<mailto: unsubscribe@firebese.com?subject=unsubscribe>, <https://firebese.com/unsubscribe/id>"
@@ -283,7 +269,7 @@ async def send_invoice_to_client(ctx: Context, client_email: str, invoice_url: s
     print("Mail sending response:")
     print(formatted_data)
     
-#AGENTS
+#Defining Agents
 BOA = Agent(
     name="BOA",
     port=8001,
@@ -317,12 +303,11 @@ user = Agent(
 )
 fund_agent_if_low(user.wallet.address())
 
+#Defining Agent tasks/functions
 @user.on_event('startup')
 async def startup(ctx: Context):
     print(f"User Agent address: {user.address}")
-    print(f"BOA Agent address: {BOA.address}")
-    print(f"MBA Agent address: {MBA.address}")
-
+# gives user the choice about what they want to do
 @user.on_interval(period=100.0)
 async def interval_user(ctx: Context):
     print("Select an option:")
@@ -341,7 +326,7 @@ async def interval_user(ctx: Context):
     elif choice == '3':
         await ctx.send(IVM.address, IVM_receive(msg="YOUR WORK HAH"))
 
-
+#receives msg from user agent and processes it
 @BOA.on_message(model=BOA_receive)
 async def BOA_msg_handler(ctx: Context, sender: str, msg: BOA_receive):
     ctx.logger.info(f"Received msg from {sender}")
@@ -349,7 +334,7 @@ async def BOA_msg_handler(ctx: Context, sender: str, msg: BOA_receive):
     best_offer = get_best_offer(msg.message)
     print(best_offer)  
 
-
+#receives msg from user agent and processes it
 @MBA.on_message(model=MBA_receive)
 async def MBA_msg_handler(ctx: Context, sender:str, msg: MBA_receive):
     global filepaths
@@ -361,6 +346,7 @@ async def MBA_msg_handler(ctx: Context, sender:str, msg: MBA_receive):
     ctx.logger.info("Apriori analysis completed successfully.")
     ctx.logger.info(f"Results DataFrame: \n{results_df}")
 
+#receives msg from user agent and processes it
 @IVM.on_message(model=IVM_receive)
 async def BOA_msg_handler(ctx: Context, sender: str, msg: IVM_receive):
     ctx.logger.info(f"Received msg from {sender}")
@@ -378,6 +364,7 @@ async def BOA_msg_handler(ctx: Context, sender: str, msg: IVM_receive):
         await get_invoice_by_id(ctx, invoice_id)
     else:
         print("Invalid choice. Please choose a valid option.")
+
 
 bureau = Bureau()
 bureau.add(user)
