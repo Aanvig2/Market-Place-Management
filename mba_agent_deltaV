@@ -1,0 +1,94 @@
+from uagents.setup import fund_agent_if_low
+from uagents import Agent, Context, Protocol, Model
+import pandas as pd
+from apyori import apriori
+from ai_engine import UAgentResponse, UAgentResponseType
+
+# Define the model for receiving messages related to Market Basket Analysis
+class MBARequest(Model):
+    min_support: float
+    min_confidence: float
+    min_lift: float
+
+# Define the seed phrase for the MBA Agent
+SEED_PHRASE = "mbaaaaasecret"
+
+# Initialize the MBA agent with its configuration
+mba_agent = Agent(
+    name="Market Basket Agent",
+    port=8002,
+    seed=SEED_PHRASE,
+    endpoint=["http://localhost:8002/analyze"],
+    mailbox="436632e4-23b4-4a64-ba5f-f55e2335c2bc@https://agentverse.ai"
+)
+
+# Ensure the agent has enough funds
+fund_agent_if_low(mba_agent.wallet.address())
+
+# Print the agent's address on startup
+@mba_agent.on_event("startup")
+async def on_startup(ctx: Context):
+    ctx.logger.info(mba_agent.address)
+
+# Helper function to process CSV and generate outputs
+def process_csv_and_generate_outputs(file_path, min_support, min_confidence, min_lift):
+    min_support = float(min_support)
+    min_confidence = float(min_confidence)
+    min_lift = float(min_lift)
+    df = pd.read_csv(file_path)
+
+    cust_level = df[["Member_number", "itemDescription"]].sort_values(by="Member_number", ascending=False)
+    cust_level['itemDescription'] = cust_level['itemDescription'].str.strip()
+    
+    # Convert csv data into proper form of data to perform Market Basket Analysis
+    transactions = [a[1]['itemDescription'].tolist() for a in cust_level.groupby(['Member_number'])]
+    
+    # Function to inspect results from Apriori analysis
+    def inspect(results):
+        lhs = []
+        rhs = []
+        supports = []
+        confidences = []
+        lifts = []
+        for result in results:
+            if len(result[2]) > 0:
+                if len(result[2][0]) > 0:
+                    lhs.append(tuple(result[2][0][0])[0] if result[2][0][0] else None)
+                    rhs.append(tuple(result[2][0][1])[0] if result[2][0][1] else None)
+                    supports.append(result[1])
+                    confidences.append(result[2][0][2] if len(result[2][0]) > 2 else None)
+                    lifts.append(result[2][0][3] if len(result[2][0]) > 3 else None)
+        return list(zip(lhs, rhs, supports, confidences, lifts))
+
+    # Function to perform Apriori analysis
+    def perform_apriori_analysis(transactions, min_support, min_confidence, min_lift):
+        rules = apriori(transactions=transactions, min_support=min_support, min_confidence=min_confidence, min_lift=min_lift, min_length=2, max_length=2)
+        results = list(rules)
+        results_df = pd.DataFrame(inspect(results), columns=['Left Hand Side', 'Right Hand Side', 'Support', 'Confidence', 'Lift'])
+        results_df['Lift'] = pd.to_numeric(results_df['Lift'])
+        results_df = results_df.nlargest(n=5, columns="Lift")
+        return results_df
+
+    results_df = perform_apriori_analysis(transactions, min_support, min_confidence, min_lift)
+    formatted_results = ""
+    for index, row in results_df.iterrows():
+        formatted_results += f"{row['Left Hand Side']} => {row['Right Hand Side']} | Support: {row['Support']:.4f}, Confidence: {row['Confidence']:.4f}, Lift: {row['Lift']:.4f}\n"
+    print(formatted_results)
+    return formatted_results
+
+
+# Protocol to handle Market Basket Analysis requests
+mba_protocol = Protocol("Market Basket Analysis Protocol")
+
+# Define the event handler for MBA requests
+@mba_protocol.on_message(model=MBARequest, replies={UAgentResponse})
+async def mba_msg_handler(ctx: Context, sender: str, msg: MBARequest):
+    file_path = "C:/Users/aanvi/Desktop/VS_code/Python/fetch_ai_all/AgentsFinal/Groceries_dataset.csv"
+    results_df = process_csv_and_generate_outputs(file_path, msg.min_support, msg.min_confidence, msg.min_lift)
+    ctx.logger.info("Apriori analysis completed successfully.")
+    message = f"Market Basket Analysis results:\n{results_df}"
+    await ctx.send(sender, UAgentResponse(message=message, type=UAgentResponseType.FINAL))
+
+# Include the protocol in the agent and run the agent
+mba_agent.include(mba_protocol, publish_manifest=True)
+mba_agent.run()
