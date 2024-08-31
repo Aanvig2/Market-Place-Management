@@ -46,7 +46,12 @@ To run the project and its agents
 cd AgentsFinal
 python Agentcode.py
 
-#Flask Frontend Project
+# Flask Frontend Project
 1. Put index.html and login.html in templates folder
 2. Install Requirements.txt
 3. Run boa_agent.py, mba_agent.py and ivm_agent.py before running App.py
+
+# DeltaV
+1. The agents are public and can be accessed from DeltaV
+2. Update Invoice API key and Mail Serverless API key
+3. Run all the agents and use DeltaV!
