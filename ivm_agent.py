@@ -20,7 +20,7 @@ class ErrorResponse(Model):
 
 # API Keys and Host Configuration
 INVOICE_API_HOST = "invoice-api1.p.rapidapi.com"
-INVOICE_API_KEY = "209946a9fbmshb80116b5b981cfep142f18jsn86a977fc9965"
+INVOICE_API_KEY = "ae6c189a1dmsha0663a4c974deedp1ca4bbjsn4be432b50c91"
 MAIL_API_HOST = "send-mail-serverless.p.rapidapi.com"
 MAIL_API_KEY = "209946a9fbmshb80116b5b981cfep142f18jsn86a977fc9965"
 
