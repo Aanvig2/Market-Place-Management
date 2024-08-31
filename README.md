@@ -45,3 +45,8 @@ To run the project and its agents
 
 cd AgentsFinal
 python Agentcode.py
+
+#Flask Frontend Project
+1. Put index.html and login.html in templates folder
+2. Install Requirements.txt
+3. Run boa_agent.py, mba_agent.py and ivm_agent.py before running App.py
